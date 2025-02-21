@@ -4,9 +4,10 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
   const isLoginPage = request.nextUrl.pathname === '/admin/login';
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api');
 
-  // Se não for uma rota administrativa, permite o acesso
-  if (!isAdminRoute) {
+  // Se não for uma rota administrativa ou for uma rota de API, permite o acesso
+  if (!isAdminRoute || isApiRoute) {
     return NextResponse.next();
   }
 
@@ -15,7 +16,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Verifica se há um token de autenticação
+  // Verifica se há um token de autenticação do Firebase
   const session = request.cookies.get('session');
   if (!session) {
     return NextResponse.redirect(new URL('/admin/login', request.url));

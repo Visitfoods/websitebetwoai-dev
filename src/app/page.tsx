@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Linkedin, Music, ChevronLeft, ChevronRight, UserCircle2, Map, Bot, Ghost, MessageSquareMore, HeadphonesIcon, Camera, Video, Code2, Wrench, ChevronDown, Handshake, MessageCircle, X, Send, Settings } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Music, ChevronLeft, ChevronRight, UserCircle2, Map, Bot, Ghost, MessageSquareMore, HeadphonesIcon, Camera, Video, Code2, Wrench, ChevronDown, Handshake, MessageCircle, X, Send, Settings, Palette, MapPin, Clock } from "lucide-react";
 import { getMainTexts, type MainTexts } from '@/lib/firebase/firebaseUtils';
 import { db } from '@/lib/firebase/firebase';
 import { onSnapshot, doc, getDoc, collection, addDoc } from 'firebase/firestore';
@@ -55,6 +55,8 @@ export default function Home() {
     title: "Impulsionamos o futuro",
     description: "A be2ai é uma empresa inovadora, dedicada à transformação digital através da inteligência artificial. Desenvolvemos soluções personalizadas que combinam tecnologia de ponta com necessidades específicas do seu negócio."
   });
+  const [isInView, setIsInView] = useState(true);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const services = [
     { title: "À SUA MEDIDA", description: "", icon: Settings },
@@ -65,10 +67,10 @@ export default function Home() {
     { title: "CHATBOTS", description: "", icon: MessageSquareMore },
     { title: "ASSISTENTES PÓS-VENDA", description: "", icon: HeadphonesIcon },
     { title: "SOFTWARE", description: "", icon: Code2 },
-    { title: "VISITA VIRTUAL", description: "", icon: Video },
+    { title: "VISITAS VIRTUAIS", description: "", icon: Video },
     { title: "FOTOGRAFIA", description: "", icon: Camera },
     { title: "VÍDEO", description: "", icon: Video },
-    { title: "DESIGN", description: "", icon: Wrench }
+    { title: "DESIGN", description: "", icon: Palette }
   ];
 
   const faqCategories = [
@@ -299,9 +301,9 @@ export default function Home() {
 
   const LoadingSpinner = () => (
     <div className="flex items-center justify-center gap-2 h-6">
-      <div className="w-2 h-2 bg-white rounded-full animate-[bounce_0.9s_infinite_-0.3s]"></div>
-      <div className="w-2 h-2 bg-white rounded-full animate-[bounce_0.9s_infinite_-0.15s]"></div>
-      <div className="w-2 h-2 bg-white rounded-full animate-[bounce_0.9s_infinite]"></div>
+      <div className="w-2 h-2 bg-white animate-[bounce_0.9s_infinite_-0.3s]"></div>
+      <div className="w-2 h-2 bg-white animate-[bounce_0.9s_infinite_-0.15s]"></div>
+      <div className="w-2 h-2 bg-white animate-[bounce_0.9s_infinite]"></div>
     </div>
   );
 
@@ -408,232 +410,158 @@ export default function Home() {
     setIsDraggingFaq(false);
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const heroSection = document.querySelector('section');
+      if (heroSection) {
+        const rect = heroSection.getBoundingClientRect();
+        setIsInView(rect.bottom > 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const position = window.pageYOffset;
+      setScrollPosition(position);
+      
+      // Atualiza as cores com base na posição do scroll
+      const servicesSection = document.querySelector('.services-gradient') as HTMLElement;
+      const faqSection = document.querySelector('.faq-gradient') as HTMLElement;
+      
+      if (servicesSection && faqSection) {
+        const servicesSectionRect = servicesSection.getBoundingClientRect();
+        
+        // Calcula a porcentagem de scroll entre as seções
+        const transitionPoint = servicesSectionRect.bottom;
+        const scrollPercentage = Math.min(Math.max((window.innerHeight - transitionPoint) / window.innerHeight, 0), 1);
+        
+        // Aplica a transição suave apenas ao background com uma opacidade mínima
+        servicesSection.style.opacity = `${Math.max(1 - scrollPercentage, 0.1)}`;
+        faqSection.style.opacity = `${Math.max(scrollPercentage, 0.1)}`;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
-      <div className="fixed inset-0 animated-gradient" style={{ zIndex: -2 }} />
-      <div 
-        className="fixed inset-0 gradient-scroll-transition" 
-        style={{ 
-          zIndex: -1,
-          opacity: Math.min(scrollProgress / 25, 0.95) // Mantém um pouco de transparência para o gradiente base aparecer
-        }} 
-      />
-
-      <svg className="hidden">
-        <defs>
-          <filter id="noise">
-            <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="2" stitchTiles="stitch"/>
-            <feColorMatrix type="saturate" values="0"/>
-            <feComponentTransfer>
-              <feFuncR type="linear" slope="1.2" intercept="-0.1"/>
-              <feFuncG type="linear" slope="1.2" intercept="-0.1"/>
-              <feFuncB type="linear" slope="1.2" intercept="-0.1"/>
-            </feComponentTransfer>
-            <feComposite operator="in" in2="SourceGraphic"/>
-          </filter>
-        </defs>
-      </svg>
-
-      {/* Vídeo Background com máscara circular */}
-      <div 
-        className="fixed left-0 top-0 h-screen overflow-hidden w-full md:w-[30%]"
-        style={{ 
-          width: `${scrollProgress > 50 ? (30 + ((scrollProgress - 50) * 1.4)) : 30}%`,
-          height: `${scrollProgress > 50 ? (100 + ((scrollProgress - 50) * 1)) : 100}vh`,
-          maxWidth: '100%',
-          transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
-      >
-        <div 
-          className="absolute inset-0 overflow-hidden md:rounded-r-[60px] rounded-none"
-          style={{
-            borderTopRightRadius: `${scrollProgress > 50 ? (60 - ((scrollProgress - 50) * 1.2)) : 60}px`,
-            borderBottomRightRadius: `${scrollProgress > 50 ? (60 - ((scrollProgress - 50) * 1.2)) : 60}px`,
-            transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
+    <main className="relative w-full bg-gradient-to-b from-purple-900 via-purple-700 to-blue-500">
+      {/* Hero Section com Vídeo */}
+      <section className="relative h-screen w-full overflow-hidden">
+        {/* Vídeo em background */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover"
         >
-          <video
-            className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{
-              transform: `scale(${scrollProgress > 50 ? (1.5 - ((scrollProgress - 50) * 0.006)) : 1.5})`,
-              transformOrigin: 'center center',
-              transition: 'all 2s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
-          {/* Overlay com gradiente roxo */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-[#5936b4]/80 to-[#8A2BE2]/80"
-            style={{
-              opacity: Math.min((scrollProgress > 50 ? (scrollProgress - 50) : 0) / 50, 1),
-              transition: 'opacity 0.3s ease-out'
-            }}
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+
+        {/* Overlay escuro para melhorar a visibilidade */}
+        <div className="absolute top-0 left-0 w-full h-full bg-black/30" />
+
+        {/* Logo no canto superior direito */}
+        <div className="absolute top-6 right-6 z-50">
+          <Image
+            src="/logo/logobranco.png"
+            alt="Be2AI Logo"
+            width={160}
+            height={54}
+            className="w-auto h-auto"
+            priority
           />
         </div>
-      </div>
 
-      {/* Hero Section */}
-      <div className="relative min-h-screen w-full flex flex-col" style={{ zIndex: 10 }}>
-        {/* Hero Content - Layout Responsivo */}
-        <div className="h-full">
-          <div className="w-full h-full px-4 sm:px-6 md:px-12">
-            {/* Layout para Desktop */}
-            <div className="hidden md:flex h-full">
-              {/* Coluna 1 - Vazia */}
-              <div className="w-1/3"></div>
+        {/* Botão Fala Comigo com Glassmorphism */}
+        <button 
+          onClick={() => setIsChatOpen(true)}
+          className="absolute bottom-8 right-8 z-50 px-10 py-5 
+            bg-white/10 backdrop-blur-md 
+            border border-white/20 
+            text-white text-xl font-medium
+            transition-all duration-300
+            hover:bg-white/20 hover:border-white/30 hover:scale-105
+            hover:shadow-[0_8px_32px_rgba(255,255,255,0.1)]
+            focus:outline-none focus:ring-2 focus:ring-white/30
+            group"
+        >
+          <span className="relative flex items-center gap-3">
+            <MessageCircle className="w-6 h-6 transition-transform group-hover:rotate-12" />
+            Fala Comigo
+          </span>
+        </button>
+      </section>
 
-              {/* Coluna 2 - Logo e Formulário */}
-              <div className="w-1/3 flex flex-col items-center">
-                {/* Logo */}
-                <div 
-                  className="w-[28rem] h-72 sm:w-[32rem] sm:h-80 md:w-[36rem] md:h-[28rem] relative"
-                  style={{
-                    opacity: Math.max(1 - scrollProgress / 70, 0),
-                    pointerEvents: scrollProgress > 70 ? 'none' : 'auto',
-                    position: scrollProgress > 70 ? 'absolute' : 'relative',
-                    transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <Image
-                    src="/logo/logobranco.png"
-                    alt="Be2AI Logo"
-                    fill
-                    priority
-                    className="object-contain"
-                  />
-                </div>
-                
-                {/* Formulário */}
-                <div 
-                  className="w-full max-w-xl"
-                  style={{ 
-                    opacity: Math.max(1 - scrollProgress / 70, 0),
-                    pointerEvents: scrollProgress > 70 ? 'none' : 'auto',
-                    position: scrollProgress > 70 ? 'absolute' : 'relative',
-                    transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <h2 className="text-3xl sm:text-4xl font-semibold text-white/90 tracking-wide mb-2 text-center">
-                  Precisa de alguma coisa?
-                </h2>
-                <form onSubmit={handleSubmit} className="w-full space-y-6 bg-white/5 p-8 rounded-2xl backdrop-blur-sm border border-white/10">
-                  {error && (
-                      <div className="bg-red-500/10 border border-red-500/20 text-red-100 px-8 py-4 rounded-xl">
-                      {error}
-                    </div>
-                  )}
-                  
-                    <div className="space-y-6">
-                    <input
-                      type="text"
-                      id="nome"
-                      name="nome"
-                      required
-                      disabled={isSubmitting}
-                      className="w-full px-6 py-3 text-lg rounded-2xl bg-black/20 border border-white/20 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50"
-                      placeholder="Nome"
-                    />
-                    
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      disabled={isSubmitting}
-                      className="w-full px-6 py-3 text-lg rounded-2xl bg-black/20 border border-white/20 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50"
-                      placeholder="Email"
-                    />
-                  </div>
-                  
-                  <div>
-                    <textarea
-                      id="mensagem"
-                      name="mensagem"
-                      required
-                      disabled={isSubmitting}
-                      rows={4}
-                      className="w-full px-6 py-3 text-lg rounded-2xl bg-black/20 border border-white/20 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50 resize-none disabled:opacity-50"
-                      placeholder="Mensagem"
-                    />
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full h-14 py-3 px-6 text-lg bg-white/10 text-white border border-white/20 rounded-2xl hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-90 disabled:cursor-not-allowed flex items-center justify-center"
+      {/* Serviços Section */}
+      <section className="services-section relative w-full overflow-hidden">
+        <div className="flex flex-col lg:flex-row h-full w-full">
+          {/* Coluna do Vídeo */}
+          <div className="w-full lg:w-1/2 relative min-h-[300px] lg:min-h-screen">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute top-0 left-0 w-full h-full object-cover"
+            >
+              <source src={videoUrl} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-black/30" />
+          </div>
+
+          {/* Coluna dos Serviços */}
+          <div className="w-full lg:w-1/2 relative">
+            <div className="services-gradient absolute inset-0 bg-gradient-to-b from-[#2389DA] via-[#2389DA] to-[#2389DA] transition-all duration-1000"></div>
+            <div className="relative w-full px-4 sm:px-8 lg:px-12 py-12 lg:py-24">
+              <h2 className="text-3xl lg:text-4xl font-bold text-center text-white mb-8 lg:mb-16">
+                SERVIÇOS
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 max-w-4xl mx-auto">
+                {services.map((service, index) => (
+                  <div
+                    key={index}
+                    className={`service-card group relative border border-white/10 transition-all duration-300 cursor-pointer overflow-hidden backdrop-blur-sm bg-white/5 ${
+                      service.title === "À SUA MEDIDA" ? "shadow-[0_0_40px_rgba(255,255,255,0.5)] hover:shadow-[0_0_50px_rgba(255,255,255,0.6)]" : ""
+                    }`}
                   >
-                    {isSubmitting ? <LoadingSpinner /> : "Enviar Mensagem"}
-                  </button>
-                </form>
-                </div>
-              </div>
-
-              {/* Coluna 3 - Texto "Impulsionamos o futuro" */}
-              <div className="w-1/3">
-                <h1 
-                  className="text-[9.5rem] font-bold text-white leading-[0.95] tracking-tighter pl-8 pt-4"
-                  style={{ 
-                    opacity: Math.max(1 - scrollProgress / 70, 0),
-                    pointerEvents: scrollProgress > 70 ? 'none' : 'auto',
-                    position: scrollProgress > 70 ? 'absolute' : 'relative',
-                    transition: 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  <div>
-                    Impulsio<br />namos
-                  </div>
-                    <div className="bg-gradient-to-br from-[#8A2BE2] via-[#C71585] to-[#FFB6C1] text-transparent bg-clip-text bg-[length:400%_400%] animate-gradient-xy">
-                    o futuro da comu<br />nicação
+                    <div className="relative flex flex-col items-center justify-center text-center h-full p-3 sm:p-4 gap-3 sm:gap-4 group-hover:scale-105 transition-transform duration-300">
+                      <div className="p-3 sm:p-4 bg-white/5 group-hover:bg-white/20 transform group-hover:-translate-y-1 transition-all duration-300">
+                        {React.createElement(service.icon, { 
+                          className: "service-icon text-white w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 group-hover:rotate-6 transition-transform duration-300" 
+                        })}
+                      </div>
+                      <h3 className="service-title text-sm sm:text-base font-semibold text-white whitespace-normal group-hover:text-white/90">{service.title}</h3>
                     </div>
-                  </h1>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Serviços Section - Nova Grelha */}
-      <div ref={servicesRef} className="w-full py-6 px-4 sm:px-8">
-        <div className="max-w-[90rem] mx-auto">
-          <h2 className="text-4xl font-bold text-center text-white mb-4 sm:mb-6 scroll-reveal">
-            SERVIÇOS
-          </h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-            {services.map((service, index) => (
-              <div
-                key={index}
-                className="service-card group relative border border-white/10 rounded-2xl hover:border-white/30 transition-all duration-300 cursor-pointer scroll-reveal overflow-hidden aspect-[4/3] md:aspect-square"
-              >
-                <div className="relative flex flex-col items-center justify-center text-center h-full p-3 sm:p-4 gap-3 sm:gap-4">
-                  <div className="rounded-xl p-3 sm:p-4">
-                    {React.createElement(service.icon, { className: "service-icon text-white w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14" })}
-                </div>
-                  <h3 className="service-title text-sm sm:text-base md:text-lg font-semibold text-white whitespace-normal">{service.title}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      </section>
 
       {/* FAQ Section */}
-      <div className="relative z-20 w-full bg-black/40 backdrop-blur-sm">
-        <div className="w-full h-full py-12 px-8">
-          <div className="max-w-6xl mx-auto space-y-6">
-            <h2 className="text-4xl font-bold text-center text-white mb-6 scroll-reveal">
+      <div className="faq-section relative z-20 w-full">
+        <div className="faq-gradient absolute inset-0 bg-gradient-to-b from-[#6B21A8] via-[#7E22CE] to-[#2389DA] transition-all duration-1000"></div>
+        <div className="relative w-full h-full py-8 sm:py-12 px-4 sm:px-8">
+          <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-center text-white mb-4 sm:mb-6 scroll-reveal relative z-10">
               PERGUNTAS FREQUENTES
             </h2>
 
             {/* Categoria Buttons */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4 sm:mb-6 relative z-10 overflow-hidden">
               <div 
                 ref={faqCategoriesRef}
-                className="faq-categories-container flex gap-4"
+                className="faq-categories-container flex gap-2 sm:gap-4 px-2 sm:px-4"
                 onMouseDown={handleFaqMouseDown}
                 onMouseMove={handleFaqMouseMove}
                 onMouseUp={handleFaqMouseUp}
@@ -643,7 +571,7 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => setSelectedFaqCategory(category)}
-                    className={`faq-category-button px-4 py-2 rounded-full transition-colors whitespace-nowrap ${
+                    className={`faq-category-button px-3 sm:px-4 py-2 transition-colors whitespace-nowrap text-sm sm:text-base ${
                       selectedFaqCategory === category
                         ? 'bg-white/20 text-white'
                         : 'bg-white/5 text-white/70 hover:bg-white/10'
@@ -656,30 +584,30 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {isLoadingFaqs ? (
                 <div className="text-center text-white/70">Carregando FAQs...</div>
               ) : faqs[selectedFaqCategory]?.length > 0 ? (
                 faqs[selectedFaqCategory].map((faq, index) => (
-                <div
+                  <div
                     key={faq.id}
-                    className="bg-white/5 border border-white/10 rounded-xl overflow-hidden"
-                >
-                  <button
-                    onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
-                      className="w-full text-left p-4"
+                    className="bg-white/5 border border-white/10 overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
+                      className="w-full text-left p-3 sm:p-4"
                     >
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-medium text-white">{faq.question}</h3>
-                        <span className="text-white/70">
+                      <div className="flex justify-between items-center gap-4">
+                        <h3 className="text-base sm:text-lg font-medium text-white">{faq.question}</h3>
+                        <span className="text-white/70 flex-shrink-0">
                           {openQuestion === index ? '−' : '+'}
                         </span>
-                    </div>
+                      </div>
                       {openQuestion === index && (
-                        <p className="mt-4 text-white/70">{faq.answer}</p>
-                  )}
+                        <p className="mt-3 sm:mt-4 text-sm sm:text-base text-white/70">{faq.answer}</p>
+                      )}
                     </button>
-                </div>
+                  </div>
                 ))
               ) : (
                 <div className="text-center text-white/70">
@@ -692,33 +620,72 @@ export default function Home() {
       </div>
 
       {/* Footer Section */}
-      <div className="relative w-full py-12 backdrop-blur-xl bg-black/40">
-        <div className="max-w-4xl mx-auto px-8">
+      <div className="relative w-full py-12" style={{ zIndex: 20 }}>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#2389DA] to-[#2389DA] backdrop-blur-xl opacity-90"></div>
+        <div className="relative w-full px-4 sm:px-8 lg:px-12 max-w-6xl mx-auto">
           <div className="flex flex-col items-center space-y-6 sm:space-y-8">
-            {/* Ícone */}
-            <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-              <Handshake className="w-6 h-6 sm:w-8 sm:h-8 text-white/90" />
-            </div>
+            {/* Três Colunas: Morada, Horário e Redes Sociais */}
+            <div className="w-full grid grid-cols-1 md:grid-cols-[45%_27.5%_27.5%] gap-8 items-start footer-grid">
+              {/* Coluna da Morada */}
+              <div className="flex flex-col items-center md:items-start text-white space-y-2">
+                <h3 className="text-lg font-semibold mb-2">Morada</h3>
+                <div className="flex items-center gap-2 text-white/80">
+                  <MapPin className="w-5 h-5 flex-shrink-0" />
+                  <p className="text-center md:text-left">
+                    Rua Álvaro Pires Miranda 270, 2415-369 Leiria
+                  </p>
+                </div>
+              </div>
 
-            {/* Título */}
-            <h2 className="text-4xl font-bold text-center text-white">
-              FALE<br />CONNOSCO
-            </h2>
+              {/* Coluna do Horário */}
+              <div className="flex flex-col items-center md:items-start text-white space-y-2">
+                <h3 className="text-lg font-semibold mb-2">Horário</h3>
+                <div className="flex items-center gap-2 text-white/80">
+                  <Clock className="w-5 h-5" />
+                  <p>Segunda à Sexta, 9h - 18h</p>
+                </div>
+              </div>
 
-            {/* Botões de Contato */}
-            <div className="flex gap-4">
-              <button
-                onClick={handleEmailClick}
-                className="px-6 py-2 bg-white/10 text-white rounded-full border border-white/20 hover:bg-white/20 transition-colors"
-              >
-                Email
-              </button>
-              <button
-                onClick={scrollToServices}
-                className="px-6 py-2 bg-white/5 text-white rounded-full border border-white/20 hover:bg-white/20 transition-colors"
-              >
-                Saber mais
-              </button>
+              {/* Coluna das Redes Sociais */}
+              <div className="flex flex-col items-center md:items-start text-white space-y-2">
+                <h3 className="text-lg font-semibold mb-2">Redes Sociais</h3>
+                <div className="flex gap-4">
+                  <Link 
+                    href="https://www.instagram.com/be2ai/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    <Instagram className="w-6 h-6" />
+                  </Link>
+                  <Link 
+                    href="https://www.facebook.com/be2ai" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    <Facebook className="w-6 h-6" />
+                  </Link>
+                  <Link 
+                    href="https://www.linkedin.com/company/be2ai" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    <Linkedin className="w-6 h-6" />
+                  </Link>
+                  <Link 
+                    href="https://www.tiktok.com/@be2ai" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-white/80 hover:text-white transition-colors"
+                  >
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0011.14-4.02v-7a8.16 8.16 0 004.65 1.48V7.1a4.79 4.79 0 01-1.2-.41z"/>
+                    </svg>
+                  </Link>
+                </div>
+              </div>
             </div>
 
             {/* Copyright e Links */}
@@ -739,69 +706,14 @@ export default function Home() {
                   Livro de Reclamações
                 </Link>
               </div>
-              <div className="flex gap-4 text-xs">
-                <Link 
-                  href="https://www.instagram.com/be2ai/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  Instagram
-                </Link>
-                <Link 
-                  href="https://www.facebook.com/be2ai" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  Facebook
-                </Link>
-                <Link 
-                  href="https://www.tiktok.com/@be2ai" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  TikTok
-                </Link>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Barra de Cookies */}
-      {showCookies && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#684fa2]/80 backdrop-blur-lg z-50 p-4 border-t border-white/10">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-white/80 text-sm text-center md:text-left">
-              Utilizamos cookies para melhorar a sua experiência no nosso website. Ao continuar a navegar, está a concordar com a nossa{' '}
-              <Link href="/politica-privacidade" className="text-white hover:underline">
-                Política de Privacidade
-              </Link>
-              .
-            </p>
-            <button
-              onClick={handleAcceptCookies}
-              className="px-6 py-2 bg-white text-black rounded-full hover:bg-white/90 transition-colors text-sm font-medium whitespace-nowrap"
-            >
-              Aceitar Cookies
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Botão de Contacto */}
-      <button
-        onClick={() => setIsChatOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors z-40"
-      >
-        <MessageCircle className="w-6 h-6 text-white" />
-      </button>
-
       {/* Formulário de Contacto Flutuante */}
       {isChatOpen && (
-        <div className="fixed bottom-24 right-6 w-96 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden z-40 flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.37)]">
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] sm:w-[400px] bg-[#2389DA]/95 backdrop-blur-xl border border-white/10 overflow-hidden z-50 flex flex-col shadow-[0_8px_32px_rgba(0,0,0,0.37)]">
           {/* Header */}
           <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
             <div className="flex items-center gap-2">
@@ -817,32 +729,44 @@ export default function Home() {
           </div>
 
           {/* Formulário */}
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <input
-              type="text"
-              name="nome"
-              required
-              className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
-              placeholder="Nome"
-            />
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
-              placeholder="Email"
-            />
-            <textarea
-              name="mensagem"
-              required
-              rows={4}
-              className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all resize-none"
-              placeholder="Mensagem"
-            />
+          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+            <div className="space-y-2">
+              <label htmlFor="nome" className="text-white/80 text-sm">Nome</label>
+              <input
+                id="nome"
+                type="text"
+                name="nome"
+                required
+                className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                placeholder="Insira o seu nome"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-white/80 text-sm">Email</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                required
+                className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                placeholder="Insira o seu email"
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="mensagem" className="text-white/80 text-sm">Mensagem</label>
+              <textarea
+                id="mensagem"
+                name="mensagem"
+                required
+                rows={4}
+                className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all resize-none"
+                placeholder="Escreva a sua mensagem"
+              />
+            </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 bg-white/10 backdrop-blur-sm text-white border border-white/10 rounded-xl hover:bg-white/20 transition-all flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
+              className="w-full py-4 bg-white/10 backdrop-blur-sm text-white border border-white/10 hover:bg-white/20 transition-all flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)]"
             >
               {isSubmitting ? <LoadingSpinner /> : "Enviar Mensagem"}
             </button>
@@ -852,29 +776,29 @@ export default function Home() {
 
       {/* Pop-up de Sucesso */}
       {showSuccess && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animated-gradient w-80 h-96 rounded-lg overflow-hidden z-50 shadow-2xl">
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animated-gradient w-80 h-96 overflow-hidden z-50 shadow-2xl">
           {/* Círculos de fundo */}
           <div className="absolute inset-0 overflow-hidden bg-black/40">
             <div 
-              className="absolute w-[200px] h-[200px] rounded-full bg-white/20 -top-20 -right-20 animate-[float_8s_ease-in-out_infinite]" 
+              className="absolute w-[200px] h-[200px] bg-white/20 -top-20 -right-20 animate-[float_8s_ease-in-out_infinite]" 
               style={{
                 animation: 'float1 8s ease-in-out infinite'
               }}
             />
             <div 
-              className="absolute w-[200px] h-[200px] rounded-full bg-white/20 -bottom-20 -left-20 animate-[float_8s_ease-in-out_infinite_1s]"
+              className="absolute w-[200px] h-[200px] bg-white/20 -bottom-20 -left-20 animate-[float_8s_ease-in-out_infinite_1s]"
               style={{
                 animation: 'float2 8s ease-in-out infinite'
               }}
             />
             <div 
-              className="absolute w-[150px] h-[150px] rounded-full bg-white/30 -top-10 -left-10 animate-[float_8s_ease-in-out_infinite_2s]"
+              className="absolute w-[150px] h-[150px] bg-white/30 -top-10 -left-10 animate-[float_8s_ease-in-out_infinite_2s]"
               style={{
                 animation: 'float3 8s ease-in-out infinite'
               }}
             />
             <div 
-              className="absolute w-[150px] h-[150px] rounded-full bg-white/30 -bottom-10 -right-10 animate-[float_8s_ease-in-out_infinite_3s]"
+              className="absolute w-[150px] h-[150px] bg-white/30 -bottom-10 -right-10 animate-[float_8s_ease-in-out_infinite_3s]"
               style={{
                 animation: 'float4 8s ease-in-out infinite'
               }}
@@ -888,7 +812,7 @@ export default function Home() {
             >
               <X className="w-5 h-5" />
             </button>
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-white/20 flex items-center justify-center mb-6">
               <svg
                 className="w-8 h-8 text-white"
                 fill="none"
@@ -904,12 +828,43 @@ export default function Home() {
               </svg>
             </div>
             <h3 className="text-white text-2xl font-medium mb-4">Confirmado!</h3>
-              <button
+            <button
               onClick={() => setShowSuccess(false)}
-              className="mt-6 px-8 py-3 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors text-lg"
-              >
+              className="mt-6 px-8 py-3 bg-white/20 text-white hover:bg-white/30 transition-colors text-lg"
+            >
               Voltar
-              </button>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Botão de Contacto */}
+      {!isInView && (
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-white/10 backdrop-blur-lg border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors z-40"
+        >
+          <MessageCircle className="w-6 h-6 text-white" />
+        </button>
+      )}
+
+      {/* Barra de Cookies */}
+      {showCookies && (
+        <div className="fixed bottom-0 left-0 right-0 bg-[#2389DA]/95 backdrop-blur-lg z-50 p-4 cookie-bar border-t border-white/10">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-white/80 text-sm text-center md:text-left">
+              Utilizamos cookies para melhorar a sua experiência no nosso website. Ao continuar a navegar, está a concordar com a nossa{' '}
+              <Link href="/politica-privacidade" className="text-white hover:underline">
+                Política de Privacidade
+              </Link>
+              .
+            </p>
+            <button
+              onClick={handleAcceptCookies}
+              className="px-6 py-2 bg-white text-[#2389DA] hover:bg-white/90 transition-colors text-sm font-medium whitespace-nowrap"
+            >
+              Aceitar Cookies
+            </button>
           </div>
         </div>
       )}

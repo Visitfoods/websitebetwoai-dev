@@ -18,12 +18,6 @@ export default function FaqsManagement() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedFaq, setSelectedFaq] = useState<Faq | null>(null);
-  const [formData, setFormData] = useState({
-    category: 'Serviços',
-    question: '',
-    answer: ''
-  });
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
   const { user } = useAuth();
 
   const categories = [
@@ -68,8 +62,7 @@ export default function FaqsManagement() {
     }
   };
 
-  const handleAddFaq = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddFaq = async (formData: { category: string; question: string; answer: string }) => {
     if (!user) return;
 
     try {
@@ -91,15 +84,13 @@ export default function FaqsManagement() {
       const data = await response.json();
       setFaqs([...faqs, data.faq]);
       setShowAddModal(false);
-      setFormData({ category: 'Serviços', question: '', answer: '' });
     } catch (error: any) {
       setError(error.message);
       console.error('Erro ao adicionar FAQ:', error);
     }
   };
 
-  const handleEditFaq = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleEditFaq = async (formData: { category: string; question: string; answer: string }) => {
     if (!selectedFaq || !user) return;
 
     try {
@@ -124,7 +115,6 @@ export default function FaqsManagement() {
       ));
       setShowEditModal(false);
       setSelectedFaq(null);
-      setFormData({ category: 'Serviços', question: '', answer: '' });
     } catch (error: any) {
       setError(error.message);
       console.error('Erro ao editar FAQ:', error);
@@ -161,52 +151,87 @@ export default function FaqsManagement() {
     show, 
     onClose, 
     title, 
-    onSubmit 
+    onSubmit,
+    initialData = {
+      category: 'Serviços',
+      question: '',
+      answer: ''
+    }
   }: { 
     show: boolean; 
     onClose: () => void; 
-    title: string; 
-    onSubmit: (e: React.FormEvent) => Promise<void>; 
+    title: string;
+    onSubmit: (data: { category: string; question: string; answer: string }) => Promise<void>;
+    initialData?: {
+      category: string;
+      question: string;
+      answer: string;
+    };
   }) => {
     if (!show) return null;
 
+    const [formData, setFormData] = useState(initialData);
+
+    useEffect(() => {
+      setFormData(initialData);
+    }, [initialData]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      onSubmit(formData);
+    };
+
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl border border-white/20 w-full max-w-2xl">
+      <div className="fixed inset-0 z-50">
+        <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-[#1e1b4b] p-8 rounded-2xl">
           <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
           
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-white/70 mb-2">Categoria</label>
+              <label className="block text-white mb-2">Categoria</label>
               <select
+                name="category"
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white"
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 bg-white text-black rounded-lg"
               >
                 {categories.map((category) => (
-                  <option key={category} value={category}>{category}</option>
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
             </div>
             
             <div>
-              <label className="block text-white/70 mb-2">Pergunta</label>
+              <label className="block text-white mb-2">Pergunta</label>
               <input
                 type="text"
+                name="question"
                 value={formData.question}
-                onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40"
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 bg-white text-black rounded-lg"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-white/70 mb-2">Resposta</label>
+              <label className="block text-white mb-2">Resposta</label>
               <textarea
+                name="answer"
                 value={formData.answer}
-                onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+                onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 resize-none"
+                className="w-full px-4 py-3 bg-white text-black rounded-lg resize-none"
                 required
               />
             </div>
@@ -215,13 +240,13 @@ export default function FaqsManagement() {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-white/20 rounded-xl text-white hover:bg-white/10"
+                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
               >
                 Guardar
               </button>
@@ -240,17 +265,12 @@ export default function FaqsManagement() {
     );
   }
 
-  const filteredFaqs = selectedCategory === 'Todos'
-    ? faqs
-    : faqs.filter(faq => faq.category === selectedCategory);
-
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Gestão de FAQs</h1>
         <button
           onClick={() => {
-            setFormData({ category: 'Serviços', question: '', answer: '' });
             setShowAddModal(true);
           }}
           className="flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white hover:bg-white/20"
@@ -268,7 +288,7 @@ export default function FaqsManagement() {
 
       {/* Lista de FAQs */}
       <div className="grid gap-4">
-        {filteredFaqs.map((faq) => (
+        {faqs.map((faq) => (
           <div
             key={faq.id}
             className="bg-white/5 border border-white/10 rounded-xl overflow-hidden"
@@ -292,11 +312,6 @@ export default function FaqsManagement() {
                   <button
                     onClick={() => {
                       setSelectedFaq(faq);
-                      setFormData({
-                        category: faq.category,
-                        question: faq.question,
-                        answer: faq.answer
-                      });
                       setShowEditModal(true);
                     }}
                     className="p-2 text-white/70 hover:text-white"
@@ -331,6 +346,11 @@ export default function FaqsManagement() {
         }}
         title="Editar FAQ"
         onSubmit={handleEditFaq}
+        initialData={selectedFaq ? {
+          category: selectedFaq.category,
+          question: selectedFaq.question,
+          answer: selectedFaq.answer
+        } : undefined}
       />
     </div>
   );

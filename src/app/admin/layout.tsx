@@ -48,14 +48,16 @@ export default function AdminLayout({
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6">
-            <div className="w-32 h-24 relative mx-auto">
-              <Image
-                src="/logo/logo.png"
-                alt="Be2AI Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
+            <Link href="/admin/dashboard">
+              <div className="w-32 h-24 relative mx-auto">
+                <Image
+                  src="/logo/logo.png"
+                  alt="Be2AI Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
           </div>
 
           {/* Navigation */}
@@ -100,7 +102,9 @@ export default function AdminLayout({
         {/* Header */}
         <header className="grid grid-cols-3 items-center p-6 bg-white/5 backdrop-blur-sm border-b border-white/10">
           <div className="col-span-1">
-            <h1 className="text-xl font-semibold text-white">Dashboard</h1>
+            <Link href="/admin/dashboard">
+              <h1 className="text-xl font-semibold text-white hover:text-white/80 transition-colors">Dashboard</h1>
+            </Link>
           </div>
           <div className="col-span-1 flex justify-center">
             {/* Coluna central vazia para futuros elementos */}

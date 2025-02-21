@@ -221,6 +221,7 @@
 body {
   min-height: 100vh;
   color: white;
+  overflow-x: hidden;
 }
 
 .custom-padding-left {
@@ -621,14 +622,193 @@ form input,
 form textarea,
 form button {
   width: 100%;
-  border-radius: 9999px;
+  border-radius: 0;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.75rem 1.5rem;
 }
 
 form textarea {
-  border-radius: 1rem;
+  border-radius: 0;
   min-height: 120px;
   resize: none;
+}
+
+/* Estilos responsivos */
+@media (max-width: 1280px) {
+  .services-section .flex {
+    flex-direction: column;
+  }
+
+  .services-section .w-1/2 {
+    width: 100%;
+  }
+
+  .services-section .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .services-section .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .services-section video {
+    object-position: center;
+    min-height: 50vh;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .px-12 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .service-card {
+    aspect-ratio: 1/1;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-section .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .services-section video {
+    min-height: 60vh;
+    object-position: center 25%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .px-12 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-24 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .text-4xl {
+    font-size: 2rem;
+  }
+
+  .service-card {
+    aspect-ratio: 16/10;
+  }
+
+  /* Ajustes para o formulário flutuante */
+  .fixed.top-1/2.left-1/2.w-[400px] {
+    width: 90% !important;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 640px) {
+  .services-section .grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .services-section video {
+    min-height: 70vh;
+    object-position: center 35%;
+  }
+
+  .service-card {
+    aspect-ratio: 16/9;
+  }
+
+  .px-8 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ajustes para FAQs */
+  .faq-categories-container {
+    padding: 0.5rem;
+  }
+
+  .faq-category-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Ajustes para o footer */
+  .footer-grid {
+    gap: 2rem;
+  }
+
+  .footer-grid > div {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 380px) {
+  .service-card {
+    aspect-ratio: 1/1;
+  }
+
+  .text-4xl {
+    font-size: 1.75rem;
+  }
+
+  .fixed.top-1/2.left-1/2.w-[400px] {
+    width: 95% !important;
+  }
+}
+
+/* Ajustes para o formulário de contato */
+.contact-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Ajustes para a barra de cookies */
+@media (max-width: 768px) {
+  .cookie-bar {
+    padding: 1rem;
+  }
+
+  .cookie-bar p {
+    font-size: 0.875rem;
+  }
+
+  .cookie-bar button {
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* Ajustes para o botão flutuante */
+@media (max-width: 640px) {
+  .fixed.bottom-6.right-6 {
+    bottom: 1rem;
+    right: 1rem;
+  }
 }
