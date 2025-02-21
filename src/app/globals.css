@@ -1,0 +1,634 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes textThrow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lightRisk {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes noise {
+  0% {
+    filter: brightness(1) contrast(102%) url(#noise);
+  }
+  50% {
+    filter: brightness(0.99) contrast(105%) url(#noise);
+  }
+  100% {
+    filter: brightness(1) contrast(102%) url(#noise);
+  }
+}
+
+/* Animações para os círculos do pop-up de sucesso */
+@keyframes float1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-20px, 20px) rotate(5deg);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(20px, -20px) rotate(-5deg);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(15px, 15px) rotate(3deg);
+  }
+}
+
+@keyframes float4 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-15px, -15px) rotate(-3deg);
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(-45deg, 
+    #020024 0%,
+    #5936b4 35%,
+    #7649df 50%,
+    #9d6cff 75%,
+    #00d4ff 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  transition: background 0.5s ease;
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0, 1);
+}
+
+.scroll-reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.scroll-reveal-delay-2 {
+  transition-delay: 0.4s;
+}
+
+.scroll-reveal-delay-3 {
+  transition-delay: 0.6s;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.9) 20%,
+    rgba(255, 255, 255, 0.8) 40%,
+    rgba(255, 255, 255, 0.9) 60%,
+    rgba(255, 255, 255, 1) 80%
+  );
+  background-size: 200% auto;
+  animation: textThrow 2s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  position: relative;
+}
+
+.gradient-text::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(8px);
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.gradient-text-simple {
+  background: linear-gradient(120deg, 
+    #0000ff 0%,
+    #1e3fff 20%,
+    #3b82f6 40%,
+    #ff69b4 60%,
+    #ff1493 80%,
+    #ff00ff 100%
+  );
+  background-size: 300% auto;
+  animation: textThrow 6s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+  position: relative;
+}
+
+.gradient-text-future {
+  position: relative;
+  color: transparent;
+  display: inline-block;
+}
+
+.gradient-text-future::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, 
+    #0000ff 0%,
+    #1e3fff 20%,
+    #3b82f6 40%,
+    #ff69b4 60%,
+    #ff1493 80%,
+    #ff00ff 100%
+  );
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: textThrow 6s ease-in-out infinite;
+}
+
+.gradient-text-future::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(15px);
+  opacity: 0.4;
+  z-index: -1;
+}
+
+body {
+  min-height: 100vh;
+  color: white;
+}
+
+.custom-padding-left {
+  padding-left: calc(5% + 2rem);
+}
+
+/* Placeholder styles */
+::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+:-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.light-risk-effect {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.light-risk-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.05) 60%,
+    transparent 100%
+  );
+  animation: lightRisk 2s linear infinite;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.gradient-scroll-transition {
+  background: linear-gradient(-45deg, 
+    #5936b4 0%,
+    #7649df 25%,
+    #1a0849 50%,
+    #000000 75%,
+    #1a0849 100%
+  );
+  background-size: 400% 400%;
+  opacity: 0;
+  transition: opacity 1s ease;
+  animation: gradient 15s ease infinite;
+}
+
+.gradient-scroll-active {
+  opacity: 1;
+}
+
+/* Remover estilos antigos dos serviços */
+.services-container,
+.services-wrapper,
+.services-track {
+  position: static;
+  height: auto;
+  transform-style: flat;
+}
+
+/* Novos estilos para a grelha de serviços */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Adicione um efeito de parallax suave */
+.parallax-element {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* Efeito de blur ao scrollar */
+.scroll-blur {
+  transition: filter 0.3s ease;
+}
+
+.scroll-blur.active {
+  filter: blur(5px);
+}
+
+/* Media queries para vídeo responsivo */
+@media (max-width: 1024px) {
+  .fixed.left-0.top-0.h-screen {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+  }
+  
+  .absolute.inset-0.overflow-hidden.bg-black\/40 {
+    border-radius: 0 !important;
+  }
+  
+  video.absolute.inset-0.w-full.h-full.object-cover {
+    transform: none !important;
+  }
+
+  /* Ajustes para o conteúdo de texto */
+  .relative.z-20 {
+    margin-top: 6rem !important;
+  }
+
+  .w-full.h-full.custom-padding-left.pr-12 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .h-full.w-\[65\%\].ml-auto {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .text-7xl {
+    font-size: 3.5rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Ajustes para o logo */
+  .w-full.pt-6 {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    z-index: 50 !important;
+    padding: 1rem !important;
+  }
+
+  .w-full.custom-padding-left.pr-12 {
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+
+  .w-40.h-32 {
+    width: 120px !important;
+    height: 96px !important;
+    margin: 0 !important;
+  }
+
+  /* Ajustes para os cartões de serviços */
+  .services-container {
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .services-wrapper {
+    height: auto !important;
+    padding: 2rem 0 !important;
+  }
+
+  .service-card {
+    width: 320px !important;
+    height: 400px !important;
+    padding: 2rem !important;
+  }
+
+  /* Ajustes para a nova grelha em tablet */
+  .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .service-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+
+  /* Ajuste do espaçamento entre formulário e serviços */
+  .min-h-\[calc\(100vh-200px\)\] {
+    min-height: auto !important;
+    padding-bottom: 2rem !important;
+  }
+
+  /* Ajustes para o formulário em tablets */
+  form.w-full.max-w-4xl {
+    padding: 1.5rem !important;
+  }
+
+  form.w-full.max-w-4xl .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  form input,
+  form textarea,
+  form button {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .fixed.left-0.top-0.h-screen {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+  }
+  
+  .absolute.inset-0.overflow-hidden.bg-black\/40 {
+    border-radius: 0 !important;
+  }
+  
+  video.absolute.inset-0.w-full.h-full.object-cover {
+    transform: none !important;
+  }
+
+  /* Ajustes para o conteúdo de texto */
+  .relative.z-20 {
+    margin-top: 8rem !important;
+  }
+
+  .w-full.h-full.custom-padding-left.pr-12 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .h-full.w-\[65\%\].ml-auto {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .text-7xl {
+    font-size: 2.5rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Ajustes para o logo */
+  .w-full.pt-6 {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    z-index: 50 !important;
+    padding: 0.75rem !important;
+  }
+
+  .w-full.custom-padding-left.pr-12 {
+    padding: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+
+  .w-40.h-32 {
+    width: 100px !important;
+    height: 80px !important;
+    margin: 0 !important;
+  }
+
+  /* Ajustes para os cartões de serviços */
+  .services-container {
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .services-wrapper {
+    height: auto !important;
+    padding: 1rem 0 !important;
+  }
+
+  .service-card {
+    width: 280px !important;
+    height: 380px !important;
+    padding: 1.5rem !important;
+  }
+
+  /* Ajustes para a nova grelha em mobile */
+  .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .service-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+
+  /* Ajustes para o formulário em smartphones */
+  form.w-full.max-w-4xl {
+    padding: 1rem !important;
+  }
+
+  form.w-full.max-w-4xl .grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  form input,
+  form textarea {
+    font-size: 1rem !important;
+    padding: 0.75rem 1.25rem !important;
+  }
+
+  form button {
+    font-size: 1rem !important;
+    height: 3.5rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Ajustes para a nova grelha em mobile */
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    padding: 0 2rem !important;
+    max-width: 400px !important;
+    margin: 0 auto !important;
+  }
+
+  .service-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+
+  /* Ajustes para o título dos serviços */
+  .service-title {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Ajuste do espaçamento entre os cards */
+  .service-card {
+    margin-bottom: 1rem !important;
+    aspect-ratio: 16/10 !important;
+  }
+
+  /* Ajuste do serviço personalizado */
+  .mt-6.sm\:mt-8.flex.justify-center {
+    padding: 0 2rem !important;
+    max-width: 400px !important;
+    margin: 1rem auto 0 !important;
+  }
+}
+
+.faq-categories-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding: 1rem;
+  cursor: grab;
+}
+
+.faq-categories-container::-webkit-scrollbar {
+  display: none;
+}
+
+.faq-categories-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.faq-category-button {
+  scroll-snap-align: center;
+}
+
+/* Estilos base do formulário */
+form.w-full.max-w-2xl {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+form.w-full.max-w-2xl .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+form input,
+form textarea,
+form button {
+  width: 100%;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1.5rem;
+}
+
+form textarea {
+  border-radius: 1rem;
+  min-height: 120px;
+  resize: none;
+}
